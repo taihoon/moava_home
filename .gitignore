@@ -40,3 +40,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# auth info
+/src/environments/firebase.config.ts

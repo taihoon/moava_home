@@ -1,0 +1,7 @@
+main { background: url("../assets/youtube-logo.png") 50% 50% no-repeat}
+
+.moava-header {background-color: #1a1a1a}
+.moava-header .mdl-layout-title {height: 100%; padding: 16px 12px 0 0}
+
+.moava-drawer .mdl-navigation__link:last-of-type{padding-right:0}
+.moava-drawer .mdl-navigation__link:hover{background-color:#fafafa !important}
