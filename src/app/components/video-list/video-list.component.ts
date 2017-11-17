@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IVideo } from '../../interfaces/video';
 import { VideoListService } from '../../services/video-list/video-list.service'
 
+import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
@@ -16,9 +17,14 @@ export class VideoListComponent implements OnInit {
   private videosCount: number = 0;
   private loading: boolean = false;
 
-  private videosSubject: Subject<IVideo[]> = new Subject();
+  private videos$: Observable<IVideo[]>;
+	private videosSubject: Subject<IVideo[]> = new Subject();
 
-  constructor(private videoListService: VideoListService) { }
+  constructor(private videoListService: VideoListService) {
+    this.videos$ = this.videosSubject.asObservable().scan((acc, curr) => {
+	  	return acc.concat(curr);
+	  });
+  }
 
   ngOnInit() {
     this.appendVideos();
@@ -27,14 +33,22 @@ export class VideoListComponent implements OnInit {
   private appendVideos(endAt: string = null, limitToLast: number = null) {
 		if (!this.loading) {
 			this.loading = true;
-			//this.videoListService.get(endAt, limitToLast).subscribe(videos => {
-
-				// this.lastVideo = videos.shift();
-				// this.videosSubject.next(videos.reverse());
-				// this.videosCount += videos.length;
-				// this.loading = false;
-			//});
+      this.videoListService
+        .get(endAt, limitToLast)
+        .take(1)
+        .subscribe(videos => {
+          this.lastVideo = videos.shift();
+          this.videosCount += videos.length;
+          this.videosSubject.next(videos.reverse());
+          this.loading = false;
+        });
 		}
-	}
+  }
+
+  private onMore() {
+		if (!this.loading) {
+			this.appendVideos(this.lastVideo.created);
+		}
+  }
 
 }

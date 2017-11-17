@@ -6,9 +6,10 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { firebase } from '../environments/firebase.config';
 import { AppRoutingModule } from './app-routing.module';
-import { VideoListModule } from './modules/video-list/video-list.module';
+import { VideoListModule } from './modules/video-list.module';
 
 import { AppComponent } from './app.component';
+
 
 @NgModule({
   declarations: [

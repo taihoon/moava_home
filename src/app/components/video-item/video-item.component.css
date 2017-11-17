@@ -1,0 +1,5 @@
+.video-link {text-decoration: none}
+.mdl-card {width: 100%; border-radius: 0; flex-direction: column-reverse}
+.mdl-card__title {background-color: rgba(0,0,0,0.35)}
+.mdl-card__title-text {color:#fff; font-weight: 400; font-size: 17px}
+.mdl-card__menu {color: #fff}
