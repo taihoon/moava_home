@@ -1,13 +1,19 @@
-<app-video-item
-  *ngFor="let video of videos$ | async"
-  [video]="video"
-  (onPlayed)="onPlayed($event)"
-  class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video"></app-video-item>
-
-<button
-  (click)="onMore()"
-  [hidden]="videosCount === 0"
-  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mav-more-button">
-  <i [hidden]="loading" class="material-icons">add</i>
-  <div [hidden]="!loading" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active mav-more-spiner"></div>
-</button>
+<div class="">
+  <div *ngIf="videosCount == 0" class="">
+    <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate mav-loading-spiner"></div>
+  </div>
+  <div class="mdl-grid mdl-grid--no-spacing video-list">
+    <app-video-item
+      *ngFor="let video of videos$ | async"
+      [video]="video"
+      (onPlayed)="onPlayed($event)"
+      class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video"></app-video-item>
+  <button
+    (click)="onMore()"
+    [hidden]="videosCount === 0"
+    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mav-more-button">
+    <i [hidden]="loading" class="material-icons">add</i>
+    <div [hidden]="!loading" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active mav-more-spiner"></div>
+  </button>
+</div>
+</div>
