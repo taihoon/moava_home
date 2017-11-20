@@ -3,11 +3,12 @@
     <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate mav-loading-spiner"></div>
   </div>
   <div class="mdl-grid mdl-grid--no-spacing video-list">
-    <app-video-item
+    <app-video-list-item
       *ngFor="let video of videos$ | async"
       [video]="video"
       (onPlayed)="onPlayed($event)"
-      class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video"></app-video-item>
+      class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video">
+    </app-video-list-item>
   <button
     (click)="onMore()"
     [hidden]="videosCount === 0"

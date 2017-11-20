@@ -50,5 +50,4 @@ export class VideoListComponent implements OnInit {
 			this.appendVideos(this.lastVideo.created);
 		}
   }
-
 }

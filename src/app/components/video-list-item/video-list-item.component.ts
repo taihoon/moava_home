@@ -3,21 +3,20 @@ import { SafeStyle, DomSanitizer } from '@angular/platform-browser';
 import { IVideo } from '../../interfaces/video';
 
 @Component({
-  selector: 'app-video-item',
-  templateUrl: './video-item.component.html',
-  styleUrls: ['./video-item.component.css']
+  selector: 'app-video-list-item',
+  templateUrl: './video-list-item.component.html',
+  styleUrls: ['./video-list-item.component.css']
 })
-export class VideoItemComponent implements OnInit {
+export class VideoListItemComponent implements OnInit {
 
   @Input() private video: IVideo;
   private backgroundStyle: SafeStyle;
 
-  constructor(
-    private sanitizer: DomSanitizer
-  ) { }
+  constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.backgroundStyle = this.sanitizer.
       bypassSecurityTrustStyle(`url(https://img.youtube.com/vi/${this.video.youtube_id}/0.jpg) center / cover`);
   }
+
 }
