@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFireObject } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
@@ -14,8 +14,8 @@ import * as plyr from "plyr";
   styleUrls: ['./video-detail.component.css']
 })
 export class VideoDetailComponent implements OnInit {
-
-  video: FirebaseObjectObservable<IVideo>;
+  @ViewChild('plyrEl') plyrEl;
+  video: IVideo;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,12 +24,29 @@ export class VideoDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.video = this.videosService.getVideo(id);
-    console.log(this.video);
-  }
+    this.videosService.getVideo(id).subscribe(video => {
+      this.video = video;
+      this.plyrEl.nativeElement.dataset.type = 'youtube';
+      this.plyrEl.nativeElement.dataset.videoId = this.video.youtube_id;
 
-  ngAfterViewInit() {
-    //plyr.setup();
+      let player = plyr.setup(this.plyrEl.nativeElement, {
+        debug: true
+      });
+
+      console.log(this.plyrEl);
+
+
+
+
+      // console.log(this.plyrEl.nativeElement);
+      // console.log(plyr);
+      // let p1 = plyr.setup(".jsplayer");
+      // console.log("p1", p1);
+      // let player = plyr.setup(this.plyrEl.nativeElement, {
+      //   debug: true
+      // });
+      // console.log(player[0]);
+    });
   }
 
 }

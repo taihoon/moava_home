@@ -10,9 +10,9 @@ export class VideosService {
   constructor(private db: AngularFireDatabase) {}
 
   getVideo(id: string) {
-    return this.db.object(`/videos/${id}`).snapshotChanges();
-      //.take(1)
-      //.map(change => ({ key: change.key, ...change.payload.val() }));
+    return this.db.object(`/videos/${id}`).snapshotChanges()
+      .take(1)
+      .map(change => ({ key: change.key, ...change.payload.val() }));
   }
 
   getVideoList(endAt: string = null, limitToLast) {
