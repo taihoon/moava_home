@@ -4,12 +4,18 @@ import { Observable } from 'rxjs/Observable';
 import { IVideo } from '../../interfaces/video';
 
 @Injectable()
-export class VideoListService {
+export class VideosService {
 
   private limitToLast: number = 60;
   constructor(private db: AngularFireDatabase) {}
 
-  get(endAt: string = null, limitToLast): Observable<IVideo[]> {
+  getVideo(id: string) {
+    return this.db.object(`/videos/${id}`).snapshotChanges();
+      //.take(1)
+      //.map(change => ({ key: change.key, ...change.payload.val() }));
+  }
+
+  getVideoList(endAt: string = null, limitToLast) {
   	if (!limitToLast) {
   		limitToLast = this.limitToLast;
     }
@@ -19,6 +25,9 @@ export class VideoListService {
       ref => endAt ?
         ref.orderByChild('created').endAt(endAt).limitToLast(limitToLast + 1) :
         ref.orderByChild('created').limitToLast(limitToLast + 1)
-      ).valueChanges();
+      ).snapshotChanges().take(1).map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+      });
   }
+
 }

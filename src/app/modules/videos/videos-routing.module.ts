@@ -7,7 +7,7 @@ import { VideoDetailComponent } from '../../components/video-detail/video-detail
   imports: [
     RouterModule.forChild([
       { path: 'videos', component: VideoListComponent },
-      { path: 'video', component: VideoDetailComponent }
+      { path: 'video/:id', component: VideoDetailComponent }
     ])
   ],
   exports: [RouterModule]

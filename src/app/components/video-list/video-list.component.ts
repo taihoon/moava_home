@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IVideo } from '../../interfaces/video';
-import { VideoListService } from '../../services/video-list/video-list.service'
+import { VideosService } from '../../services/videos/videos.service'
 
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
@@ -20,7 +20,7 @@ export class VideoListComponent implements OnInit {
   private videos$: Observable<IVideo[]>;
 	private videosSubject: Subject<IVideo[]> = new Subject();
 
-  constructor(private videoListService: VideoListService) {
+  constructor(private videosService: VideosService) {
     this.videos$ = this.videosSubject.asObservable().scan((acc, curr) => {
 	  	return acc.concat(curr);
 	  });
@@ -33,9 +33,8 @@ export class VideoListComponent implements OnInit {
   private appendVideos(endAt: string = null, limitToLast: number = null) {
 		if (!this.loading) {
 			this.loading = true;
-      this.videoListService
-        .get(endAt, limitToLast)
-        .take(1)
+      this.videosService
+        .getVideoList(endAt, limitToLast)
         .subscribe(videos => {
           this.lastVideo = videos.shift();
           this.videosCount += videos.length;

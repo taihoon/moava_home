@@ -1,7 +1,6 @@
-<a href="" (click)="goDetail($event)" class="video-link">
+<a href="" routerLink="/video/{{video.key}}" class="video-link">
   <div
-    *ngIf="!play"
-    data-id="{{video.$key}}"
+    data-id="{{video.key}}"
     [style.background]="backgroundStyle"
     class="mdl-card">
       <div class="mdl-card__title">
