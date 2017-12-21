@@ -1,52 +1,75 @@
-import { Component, OnInit } from '@angular/core';
+import { PLATFORM_ID, Component, Injectable, Inject, OnInit, OnDestroy } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { IVideo } from '../../interfaces/video';
 import { VideosService } from '../../services/videos/videos.service'
 
 import 'rxjs/Rx';
-import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 
+@Injectable()
 @Component({
   selector: 'app-video-list',
   templateUrl: './video-list.component.html',
   styleUrls: ['./video-list.component.css']
 })
-export class VideoListComponent implements OnInit {
+export class VideoListComponent implements OnInit, OnDestroy {
 
   private lastVideo: IVideo;
-  private videosCount: number = 0;
   private loading: boolean = false;
 
   private videos$: Observable<IVideo[]>;
-	private videosSubject: Subject<IVideo[]> = new Subject();
+  private more$: BehaviorSubject<string|null>;
+  private destroy$: Subject<null>;
 
-  constructor(private videosService: VideosService) {
-    this.videos$ = this.videosSubject.asObservable().scan((acc, curr) => {
-	  	return acc.concat(curr);
-	  });
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: any,
+    @Inject('LOCALSTORAGE') private localStorage: any,
+    private videosService: VideosService) {
+      this.destroy$ = new Subject();
+      this.more$ = new BehaviorSubject(null);
+
+      this.videos$ = this.more$
+        .switchMap(created => this.videosService.getVideoList(created))
+        .scan((acc, curr) => {
+          this.lastVideo = curr.shift();
+          return acc.concat(curr.reverse());
+        }, [])
+
+        this.videos$.buffer(this.destroy$)
+          .subscribe(v => {
+            console.log("destroy", v[v.length - 1]);
+          })
+
+      // this.destroy$
+      //   .switchMap(() => this.more$)
+      //   .subscribe(v => {
+      //     console.log("destroy", v);
+      //   });
   }
 
   ngOnInit() {
-    this.appendVideos();
+    if (isPlatformBrowser(this.platformId)) {
+      // console.log(this.localStorage);
+      // localStorage will be available: we can use it.
+    }
+    if (isPlatformServer(this.platformId)) {
+        // localStorage will be null.
+    }
   }
 
-  private appendVideos(endAt: string = null, limitToLast: number = null) {
-		if (!this.loading) {
-			this.loading = true;
-      this.videosService
-        .getVideoList(endAt, limitToLast)
-        .subscribe(videos => {
-          this.lastVideo = videos.shift();
-          this.videosCount += videos.length;
-          this.videosSubject.next(videos.reverse());
-          this.loading = false;
-        });
-		}
+  ngOnDestroy() {
+    this.destroy$.next();
+
+    //this.destroy$.complete()
+    //this.videos$.complete();
   }
 
   private onMore() {
 		if (!this.loading) {
-			this.appendVideos(this.lastVideo.created);
-		}
+      this.more$.next(this.lastVideo.created);
+    }
   }
+
 }

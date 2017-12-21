@@ -21,7 +21,13 @@ import { AppComponent } from './app.component';
     AngularFireDatabaseModule,
     VideosModule
   ],
-  providers: [],
+  providers: [
+    { provide: 'LOCALSTORAGE', useFactory: getLocalStorage }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function getLocalStorage() {
+  return (typeof window !== "undefined") ? window.localStorage : null;
+}

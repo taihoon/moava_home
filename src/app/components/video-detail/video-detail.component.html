@@ -1,3 +1,6 @@
-<div class="wrap">
-  <div #plyrEl class="plyr"></div>
-</div>
+<iframe
+  *ngIf="src"
+  [src]="src"
+  frameborder="0"
+  allowfullscreen
+  class="ifrm-youtube"></iframe>

@@ -11,7 +11,6 @@
     </app-video-list-item>
   <button
     (click)="onMore()"
-    [hidden]="videosCount === 0"
     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mav-more-button">
     <i [hidden]="loading" class="material-icons">add</i>
     <div [hidden]="!loading" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active mav-more-spiner"></div>
