@@ -6,7 +6,7 @@
     <app-video-list-item
       *ngFor="let video of videos$ | async"
       [video]="video"
-      (onPlayed)="onPlayed($event)"
+      (onPlay)="onPlay($event)"
       class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video">
     </app-video-list-item>
   <button
