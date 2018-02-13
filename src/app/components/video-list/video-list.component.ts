@@ -1,5 +1,6 @@
-import { PLATFORM_ID, Component, Injectable, Inject, OnInit, OnDestroy } from '@angular/core';
+import { PLATFORM_ID, Component, Injectable, Inject, OnInit } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router'
 import { IVideo } from '../../interfaces/video';
 import { VideosService } from '../../services/videos/videos.service'
 
@@ -14,7 +15,7 @@ import { Observable } from 'rxjs/Observable';
   templateUrl: './video-list.component.html',
   styleUrls: ['./video-list.component.css']
 })
-export class VideoListComponent implements OnInit, OnDestroy {
+export class VideoListComponent implements OnInit {
 
   private lastVideo: IVideo;
   private loading: boolean = false;
@@ -27,31 +28,33 @@ export class VideoListComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     @Inject('LOCALSTORAGE') private localStorage: any,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     private videosService: VideosService) {
       this.loading$ = new BehaviorSubject(false)
       this.destroy$ = new Subject();
       this.more$ = new BehaviorSubject(null);
-
       this.videos$ = this.more$
         .switchMap(created => this.videosService.getVideoList(created))
-        .scan((acc, curr) => {
-          this.lastVideo = curr.shift();
-          return acc.concat(curr.reverse());
-        }, [])
+        .do(videos => this.lastVideo = videos.shift())
+        .scan((acc, curr) => acc.concat(curr.reverse(), []))
+        .do(v => this.localStorage.setItem('moava:videos', JSON.stringify(v)));
 
-        this.videos$.buffer(this.destroy$)
-          .subscribe(v => {
-            console.log("destroy", v[v.length - 1]);
-          })
+        //console.log("s", this.activatedRoute.snapshot);
 
-      // this.destroy$
-      //   .switchMap(() => this.more$)
-      //   .subscribe(v => {
-      //     console.log("destroy", v);
-      //   });
+        // this.router.events
+        //   .filter(e => e instanceof NavigationEnd)
+        //   .pairwise()
+        //   .subscribe(e => console.log("events", e))
   }
 
   ngOnInit() {
+    this.router.events
+    .subscribe((event) => {
+      // example: NavigationStart, RoutesRecognized, NavigationEnd
+      console.log(event);
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       // console.log(this.localStorage);
       // localStorage will be available: we can use it.
@@ -61,17 +64,14 @@ export class VideoListComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-
-    //this.destroy$.complete()
-    //this.videos$.complete();
-  }
-
   private onMore() {
 		if (!this.loading) {
       this.more$.next(this.lastVideo.created);
     }
+  }
+
+  private onPlay() {
+
   }
 
 }
