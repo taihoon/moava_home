@@ -1,13 +1,13 @@
-@media (min-width: 1200px) and (max-width: 1599px) {
-  .video {width: calc(25% - 16px)}
+@media (min-width: 1024px) and (max-width: 1599px) {
+  .video {width: calc(25%) !important}
 }
 
 @media (min-width: 1600px) and (max-width: 2199px) {
-  .video {width: calc(20% - 16px)}
+  .video {width: calc(20%) !important}
 }
 
 @media (min-width: 2200px) {
-  .video {width: calc(16.6666666666% - 16px)}
+  .video {width: calc(16.6666666666%) !important}
 }
 
 .mav-loading-spiner {

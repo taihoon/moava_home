@@ -1,5 +1,5 @@
 <div class="">
-  <div *ngIf="videosCount == 0" class="">
+  <div *ngIf="loading$ | async" class="">
     <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate mav-loading-spiner"></div>
   </div>
   <div class="mdl-grid mdl-grid--no-spacing video-list">
@@ -9,7 +9,7 @@
       (onPlayed)="onPlayed($event)"
       class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video">
     </app-video-list-item>
-  <button
+  <button *ngIf="!loading$ | async"
     (click)="onMore()"
     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mav-more-button">
     <i [hidden]="loading" class="material-icons">add</i>

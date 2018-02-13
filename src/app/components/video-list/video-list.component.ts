@@ -22,11 +22,13 @@ export class VideoListComponent implements OnInit, OnDestroy {
   private videos$: Observable<IVideo[]>;
   private more$: BehaviorSubject<string|null>;
   private destroy$: Subject<null>;
+  private loading$: BehaviorSubject<Boolean>
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     @Inject('LOCALSTORAGE') private localStorage: any,
     private videosService: VideosService) {
+      this.loading$ = new BehaviorSubject(false)
       this.destroy$ = new Subject();
       this.more$ = new BehaviorSubject(null);
 
