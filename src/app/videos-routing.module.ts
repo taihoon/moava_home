@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { VideoListComponent } from '../../components/video-list/video-list.component';
-import { VideoDetailComponent } from '../../components/video-detail/video-detail.component';
+import { VideoListComponent } from './components/video-list/video-list.component';
+import { VideoDetailComponent } from './components/video-detail/video-detail.component';
 
 @NgModule({
   imports: [

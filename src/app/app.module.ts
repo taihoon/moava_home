@@ -6,7 +6,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { firebase } from '../environments/firebase.config';
 import { AppRoutingModule } from './app-routing.module';
-import { VideosModule } from './modules/videos/videos.module';
+import { VideosModule } from './videos.module';
 
 import { AppComponent } from './app.component';
 
