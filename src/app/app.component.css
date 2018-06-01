@@ -5,3 +5,5 @@ main { background: #202020 url("../assets/youtube-logo.png") 50% 50% no-repeat}
 
 .moava-drawer .mdl-navigation__link:last-of-type{padding-right:0}
 .moava-drawer .mdl-navigation__link:hover{background-color:#fafafa !important}
+
+.mav-loading-spiner {width: 100%;margin-bottom:-4px}

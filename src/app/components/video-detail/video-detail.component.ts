@@ -1,8 +1,8 @@
 import { Component, ViewChild, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { AngularFireObject } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
+// import { AngularFireObject } from 'angularfire2/database';
+import { Observable } from 'rxjs';
 
 import { VideosService } from '../../services/videos/videos.service'
 import { IVideo } from '../../interfaces/video';
@@ -25,12 +25,12 @@ export class VideoDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.videosService.getVideo(id).subscribe(video => {
-      this.video = video;
-      this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
-		  	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`
-      );
-    });
+    // this.videosService.getVideo(id).subscribe(video => {
+    //   this.video = video;
+    //   this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
+		//   	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`
+    //   );
+    // });
   }
 
 }

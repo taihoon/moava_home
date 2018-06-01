@@ -1,5 +1,5 @@
 export interface IVideo {
-	key: string;
+	key?: string;
 	site: string;
   post_id: string;
   title: string;
