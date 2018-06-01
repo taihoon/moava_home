@@ -25,12 +25,12 @@ export class VideoDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    // this.videosService.getVideo(id).subscribe(video => {
-    //   this.video = video;
-    //   this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
-		//   	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`
-    //   );
-    // });
+    this.videosService.getVideo(id).subscribe(video => {
+      this.video = video;
+      this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
+		  	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1`
+      );
+    });
   }
 
 }

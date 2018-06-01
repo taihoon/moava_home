@@ -7,16 +7,17 @@ import { IVideo } from '../../interfaces/video';
 
 @Injectable()
 export class VideosService {
-  // items$: Observable<any[]>;
   private videos: IVideo[];
   private limitToLast = 4;
   constructor(private db: AngularFireDatabase) {}
 
   getVideo(id: string) {
-    // return this.db.object(`/videos/${id}`).snapshotChanges().pipe(
-    //   take(1),
-    //   map(change => ({ key: change.key, ...change.payload.val() }))
-    // );
+    return this.db.object(`/videos/${id}`)
+      .snapshotChanges()
+      .pipe(
+        first(),
+        map(c => ({ key: c.key, ...c.payload.val() }))
+      );
   }
 
   getVideoList(endAt: string = null, limitToLast = this.limitToLast) {
