@@ -1,11 +1,19 @@
 <div class="">
   <div class="mdl-grid mdl-grid--no-spacing video-list">
-    <app-video-list-item
+    <div
       *ngFor="let video of videos$ | async"
-      [video]="video"
-      (onPlay)="onPlay($event)"
       class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video">
-    </app-video-list-item>
+      <a routerLink="/video/{{video.key}}" class="video-link">
+        <div
+          data-id="{{video.key}}"
+          [style.background]="background(video)"
+          class="mdl-card">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">{{video.title}}</h2>
+            </div>
+        </div>
+      </a>
+    </div>
   <button
     (click)="onMore()"
     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mav-more-button">
