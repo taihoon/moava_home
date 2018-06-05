@@ -4,7 +4,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 // import { AngularFireObject } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 
-import { VideosService } from '../../services/videos/videos.service'
+import { VideoService } from '../../services/video/video.service'
 import { IVideo } from '../../shared/video';
 
 @Component({
@@ -20,12 +20,12 @@ export class VideoDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private videosService: VideosService
+    private videoService: VideoService
   ) { }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.videosService.getVideo(id).subscribe(video => {
+    this.videoService.getVideo(id).subscribe(video => {
       this.video = <IVideo>(video);
       this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
 		  	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1&controls=2&playsinline=1`

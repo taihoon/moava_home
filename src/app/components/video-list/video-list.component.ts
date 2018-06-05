@@ -7,7 +7,7 @@ import { flatMap, map, tap, toArray, scan, switchMap} from 'rxjs/operators';
 import { AngularFireAction, DatabaseSnapshot } from 'angularfire2/database';
 
 import { IVideo } from '../../shared/video';
-import { VideosService } from '../../services/videos/videos.service';
+import { VideoService } from '../../services/video/video.service';
 
 @Component({
   selector: 'app-video-list',
@@ -28,12 +28,12 @@ export class VideoListComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private videosService: VideosService) {}
+    private videoService: VideoService) {}
 
   ngOnInit() {
       this.videos$ = this.more$.pipe(
         tap(_ => this.loading = true),
-        switchMap(created => this.videosService.getVideoList(created)),
+        switchMap(created => this.videoService.getVideos(created)),
         tap(videos => this.lastVideo = <IVideo>videos.shift()),
         scan((acc, curr) => acc.concat(curr.reverse()), []),
         tap(_ => this.loading = false)

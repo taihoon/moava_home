@@ -6,7 +6,7 @@ import { first, flatMap, map, take, tap, toArray } from 'rxjs/operators';
 import { IVideo } from '../../shared/video';
 
 @Injectable()
-export class VideosService {
+export class VideoService {
   private videos: IVideo[];
   private limitToLast = 60;
   constructor(private db: AngularFireDatabase) {}
@@ -20,7 +20,7 @@ export class VideosService {
       );
   }
 
-  getVideoList(endAt: string = null, limitToLast = this.limitToLast) {
+  getVideos(endAt: string = null, limitToLast = this.limitToLast) {
     return this.db.list('/videos', ref => {
       if (endAt) {
         return ref.orderByChild('created').endAt(endAt).limitToLast(limitToLast + 1);
