@@ -1,10 +1,7 @@
-import { PLATFORM_ID, Component, Injectable, Inject, OnInit } from '@angular/core';
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { SafeStyle, DomSanitizer } from '@angular/platform-browser';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { flatMap, map, tap, toArray, scan, switchMap} from 'rxjs/operators';
-import { AngularFireAction, DatabaseSnapshot } from 'angularfire2/database';
+import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { scan, switchMap, tap } from 'rxjs/operators';
 
 import { IVideo } from '../../shared/video';
 import { VideoService } from '../../services/video/video.service';
@@ -15,29 +12,42 @@ import { VideoService } from '../../services/video/video.service';
   styleUrls: ['./video-list.component.css']
 })
 export class VideoListComponent implements OnInit {
-
-  private lastVideo: IVideo;
-  private loading = false;
+  private endAt: string;
+  private loading: boolean;
+  private limit: number;
 
   private videos$: Observable<any[]>;
-  private more$: BehaviorSubject<string|null> = new BehaviorSubject(null);
+  private more$: BehaviorSubject<{endAt: string, limit: number}>;
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: any,
-    @Inject('LOCALSTORAGE') private localStorage: any,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private videoService: VideoService) {}
+    private videoService: VideoService) {
+      this.loading = false;
+      this.endAt = '';
+      this.limit = 4;
+      this.more$ = new BehaviorSubject({
+        endAt: this.endAt,
+        limit: this.limit
+      });
+    }
 
   ngOnInit() {
-      this.videos$ = this.more$.pipe(
-        tap(_ => this.loading = true),
-        switchMap(created => this.videoService.getVideos(created)),
-        tap(videos => this.lastVideo = <IVideo>videos.shift()),
-        scan((acc, curr) => acc.concat(curr.reverse()), []),
-        tap(_ => this.loading = false)
-      );
+    this.videos$ = this.more$.pipe(
+      tap(_ => this.loading = true),
+      tap(_ => console.log(_.endAt, _.limit)),
+      switchMap(info => this.videoService.getVideos(info.endAt, info.limit)),
+      tap(_ => _.forEach(v => console.log(v.created, v.title))),
+      tap(this.assignEndAt.bind(this)),
+      scan((acc, videos) => acc.concat(videos) , []),
+      tap(_ => this.loading = false)
+    );
+  }
+
+  private assignEndAt(videos: IVideo[]) {
+    if (videos.length === this.limit + 1) {
+      this.endAt = videos.pop().created;
+      console.log(this.endAt);
+    }
   }
 
   private background(video) {
@@ -47,7 +57,10 @@ export class VideoListComponent implements OnInit {
 
   private onMore() {
 		if (!this.loading) {
-      this.more$.next(this.lastVideo.created);
+      this.more$.next({
+        endAt: this.endAt,
+        limit: this.limit
+      });
     }
   }
 }

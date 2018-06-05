@@ -1,39 +1,55 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireAction } from 'angularfire2/database';
-import { Observable } from 'rxjs';
-import { first, flatMap, map, take, tap, toArray } from 'rxjs/operators';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable, of } from 'rxjs';
+import { first, flatMap, map, tap, toArray} from 'rxjs/operators';
 
 import { IVideo } from '../../shared/video';
 
 @Injectable()
 export class VideoService {
-  private videos: IVideo[];
-  private limitToLast = 60;
-  constructor(private db: AngularFireDatabase) {}
+  private videos$: Observable<IVideo[]>;
+  private limit: number;
 
-  getVideo(id: string): Observable<{key: string}> {
+  constructor(private db: AngularFireDatabase) {
+    this.limit = 60;
+  }
+
+  getVideo(id: string): Observable<IVideo> {
     return this.db.object(`/videos/${id}`)
       .snapshotChanges()
       .pipe(
         first(),
-        map(c => ({ key: c.key, ...c.payload.val() }))
+        map(c => (<IVideo>{ key: c.key, ...c.payload.val() }))
       );
   }
 
-  getVideos(endAt: string = null, limitToLast = this.limitToLast): Observable<{key: string}[]> {
+  getVideos(endAt, limit = this.limit): Observable<IVideo[]> {
+    // if (count === 0 && this.videos.length > 0) {
+    //   return this.getCachedVideos();
+    // } else {
+       return this.getFetchVideos(endAt, limit);
+    // }
+  }
+
+  protected getCachedVideos(): Observable<IVideo[]> {
+    return of(this.videos);
+  }
+
+  protected getFetchVideos(endAt, limit = this.limit): Observable<IVideo[]> {
     return this.db.list('/videos', ref => {
       if (endAt) {
-        return ref.orderByChild('created').endAt(endAt).limitToLast(limitToLast + 1);
+        return ref.orderByChild('created').endAt(endAt).limitToLast(limit + 1);
       } else {
-        return ref.orderByChild('created').limitToLast(limitToLast + 1);
+        return ref.orderByChild('created').limitToLast(limit + 1);
       }
     })
     .snapshotChanges()
     .pipe(
       first(),
       flatMap(c => c),
-      map(c => ({ key: c.payload.key, ...c.payload.val() })),
-      toArray()
+      map(c => (<IVideo>{ key: c.payload.key, ...c.payload.val() })),
+      toArray(),
+      map(videos => videos.reverse())
     );
   }
 }
