@@ -5,7 +5,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 
 import { VideosService } from '../../services/videos/videos.service'
-import { IVideo } from '../../interfaces/video';
+import { IVideo } from '../../shared/video';
 
 @Component({
   selector: 'app-video-detail',
@@ -26,7 +26,7 @@ export class VideoDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     this.videosService.getVideo(id).subscribe(video => {
-      this.video = <IVideo>video;
+      this.video = <IVideo>(video);
       this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
 		  	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1&controls=2&playsinline=1`
       );

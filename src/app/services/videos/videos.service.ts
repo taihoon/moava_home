@@ -3,12 +3,12 @@ import { AngularFireDatabase, AngularFireAction } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 import { first, flatMap, map, take, tap, toArray } from 'rxjs/operators';
 
-import { IVideo } from '../../interfaces/video';
+import { IVideo } from '../../shared/video';
 
 @Injectable()
 export class VideosService {
   private videos: IVideo[];
-  private limitToLast = 4;
+  private limitToLast = 60;
   constructor(private db: AngularFireDatabase) {}
 
   getVideo(id: string) {

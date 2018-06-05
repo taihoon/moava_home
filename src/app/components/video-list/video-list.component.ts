@@ -6,7 +6,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { flatMap, map, tap, toArray, scan, switchMap} from 'rxjs/operators';
 import { AngularFireAction, DatabaseSnapshot } from 'angularfire2/database';
 
-import { IVideo } from '../../interfaces/video';
+import { IVideo } from '../../shared/video';
 import { VideosService } from '../../services/videos/videos.service';
 
 @Component({
