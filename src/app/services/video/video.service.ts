@@ -11,7 +11,7 @@ export class VideoService {
   private limitToLast = 60;
   constructor(private db: AngularFireDatabase) {}
 
-  getVideo(id: string) {
+  getVideo(id: string): Observable<{key: string}> {
     return this.db.object(`/videos/${id}`)
       .snapshotChanges()
       .pipe(
@@ -20,7 +20,7 @@ export class VideoService {
       );
   }
 
-  getVideos(endAt: string = null, limitToLast = this.limitToLast) {
+  getVideos(endAt: string = null, limitToLast = this.limitToLast): Observable<{key: string}[]> {
     return this.db.list('/videos', ref => {
       if (endAt) {
         return ref.orderByChild('created').endAt(endAt).limitToLast(limitToLast + 1);
