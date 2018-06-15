@@ -1,17 +1,40 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable, of } from 'rxjs';
+import { AngularFireDatabase, AngularFireList, AngularFireAction, DatabaseSnapshot } from 'angularfire2/database';
+import { Observable, Subject, empty, of } from 'rxjs';
 import { first, flatMap, map, tap, toArray} from 'rxjs/operators';
 
 import { IVideo } from '../../shared/video';
 
 @Injectable()
 export class VideoService {
-  private videos$: Observable<IVideo[]>;
-  private limit: number;
+  private videos: IVideo[];
+  private endAt: string;
+  private _cache: object;
 
   constructor(private db: AngularFireDatabase) {
-    this.limit = 60;
+    this.videos = [];
+    this._cache = {};
+  }
+
+  isCached(): boolean {
+    return  !!(this.videos && this.videos.length > 0);
+  }
+
+  cache(key: string, value?: any): (void|any) {
+    if (key && (value !== undefined || value !== null )) {
+      console.log(key, value);
+      this._cache[key] = value;
+    } else if (key && !value) {
+      return this._cache[key];
+    }
+  }
+
+  clearVideos(): void {
+    this.videos = [];
+  }
+
+  getEndAt(): string {
+    return this.endAt;
   }
 
   getVideo(id: string): Observable<IVideo> {
@@ -23,33 +46,29 @@ export class VideoService {
       );
   }
 
-  getVideos(endAt, limit = this.limit): Observable<IVideo[]> {
-    // if (count === 0 && this.videos.length > 0) {
-    //   return this.getCachedVideos();
-    // } else {
-       return this.getFetchVideos(endAt, limit);
-    // }
-  }
+  getVideos(endAt, limit, isFirst): Observable<IVideo[]> {
+    let videos$: Observable<IVideo[]>;
 
-  protected getCachedVideos(): Observable<IVideo[]> {
-    return of(this.videos);
-  }
+    if (isFirst && this.isCached()) {
+      videos$ = of(this.videos);
+    } else {
+      videos$ = this.db.list('/videos', ref => {
+        if (endAt) {
+          return ref.orderByChild('created').endAt(endAt).limitToLast(limit + 1);
+        } else {
+          return ref.orderByChild('created').limitToLast(limit + 1);
+        }
+      })
+      .snapshotChanges()
+      .pipe(
+        first(),
+        map(c => c.reverse()),
+        map(c => c.map(v => (<IVideo>{ key: v.payload.key, ...v.payload.val() }))),
+        tap(c => this.endAt = c.pop().created),
+        tap(c => this.videos = this.videos.concat(c))
+      );
+    }
 
-  protected getFetchVideos(endAt, limit = this.limit): Observable<IVideo[]> {
-    return this.db.list('/videos', ref => {
-      if (endAt) {
-        return ref.orderByChild('created').endAt(endAt).limitToLast(limit + 1);
-      } else {
-        return ref.orderByChild('created').limitToLast(limit + 1);
-      }
-    })
-    .snapshotChanges()
-    .pipe(
-      first(),
-      flatMap(c => c),
-      map(c => (<IVideo>{ key: c.payload.key, ...c.payload.val() })),
-      toArray(),
-      map(videos => videos.reverse())
-    );
+    return videos$;
   }
 }

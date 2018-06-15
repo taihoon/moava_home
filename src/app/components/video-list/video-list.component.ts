@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {  } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
+
 import { Observable, BehaviorSubject } from 'rxjs';
 import { scan, switchMap, tap } from 'rxjs/operators';
 
@@ -12,42 +14,46 @@ import { VideoService } from '../../services/video/video.service';
   styleUrls: ['./video-list.component.css']
 })
 export class VideoListComponent implements OnInit {
-  private endAt: string;
-  private loading: boolean;
-  private limit: number;
+  loading: boolean;
+  videos$: Observable<IVideo[]>;
+  playing: boolean;
 
-  private videos$: Observable<any[]>;
-  private more$: BehaviorSubject<{endAt: string, limit: number}>;
+  private more$: BehaviorSubject<boolean>;
+  private limit: number;
 
   constructor(
     private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
     private videoService: VideoService) {
+      console.log("videolist constructor");
       this.loading = false;
-      this.endAt = '';
+      this.playing = false;
       this.limit = 4;
-      this.more$ = new BehaviorSubject({
-        endAt: this.endAt,
-        limit: this.limit
+      this.more$ = new BehaviorSubject(true);
+
+      this.route.paramMap.subscribe(params => {
+        console.log(params.get('id'));
       });
+
+      this.videos$ = this.more$.pipe(
+        tap(_ => this.loading = true),
+        switchMap(isFirst => this.videoService.getVideos(
+          this.videoService.getEndAt(), this.limit, isFirst)),
+        scan((acc, videos) => acc.concat(videos) , []),
+        tap(_ => this.loading = false)
+      );
     }
 
   ngOnInit() {
-    this.videos$ = this.more$.pipe(
-      tap(_ => this.loading = true),
-      tap(_ => console.log(_.endAt, _.limit)),
-      switchMap(info => this.videoService.getVideos(info.endAt, info.limit)),
-      tap(_ => _.forEach(v => console.log(v.created, v.title))),
-      tap(this.assignEndAt.bind(this)),
-      scan((acc, videos) => acc.concat(videos) , []),
-      tap(_ => this.loading = false)
-    );
-  }
-
-  private assignEndAt(videos: IVideo[]) {
-    if (videos.length === this.limit + 1) {
-      this.endAt = videos.pop().created;
-      console.log(this.endAt);
-    }
+    console.log("video list oninit");
+    // let endAt;
+    // this.videos$ = this.more$.pipe(
+    //   tap(_ => this.loading = true),
+    //   tap(_ => endAt = this.videoService.getEndAt()),
+    //   switchMap(isFirst => this.videoService.getVideos(endAt, this.limit, isFirst)),
+    //   scan((acc, videos) => acc.concat(videos) , []),
+    //   tap(_ => this.loading = false)
+    // );
   }
 
   private background(video) {
@@ -57,10 +63,28 @@ export class VideoListComponent implements OnInit {
 
   private onMore() {
 		if (!this.loading) {
-      this.more$.next({
-        endAt: this.endAt,
-        limit: this.limit
-      });
+      this.more$.next(false);
     }
   }
+
+  protected onClickVideo() {
+    this.playing = true;
+    // const scrollTop = this.getScrollTop();
+    // this.videoService.cache("scrollTop", scrollTop);
+    // this.videoService.cache("key", key);
+  }
+
+  // private getScrollTop() {
+  //   let el = this.el.nativeElement;
+  //   const matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+
+  //   while (el) {
+  //     if (matchesSelector.call(el, 'main')) {
+  //       break;
+  //     } else {
+  //       el = el.parentElement;
+  //     }
+  //   }
+  //   return el.scrollTop;
+  // }
 }

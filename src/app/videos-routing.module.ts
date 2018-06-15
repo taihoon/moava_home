@@ -6,8 +6,13 @@ import { VideoDetailComponent } from './components/video-detail/video-detail.com
 @NgModule({
   imports: [
     RouterModule.forChild([
-      { path: 'videos', component: VideoListComponent },
-      { path: 'video/:id', component: VideoDetailComponent }
+      {
+        path: 'videos',
+        component: VideoListComponent,
+        children: [
+          { path: ':id', component: VideoDetailComponent }
+        ]
+      }
     ])
   ],
   exports: [RouterModule]
