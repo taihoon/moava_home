@@ -28,7 +28,7 @@ export class VideoDetailComponent implements OnInit {
     this.videoService.getVideo(id).subscribe(video => {
       this.video = <IVideo>(video);
       this.src = this.sanitizer.bypassSecurityTrustResourceUrl(
-		  	`https://www.youtube.com/embed/${video.youtube_id}?autoplay=1&controls=2&playsinline=1`
+        `https://www.youtube.com/embed/${video.youtube_id}?rel=0&autoplay=1`
       );
     });
   }

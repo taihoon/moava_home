@@ -1,9 +1,9 @@
-<div class="" [hidden]="playing">
+<div class="video-list-wrapper" [style.visibility]="playing ? 'hidden' : 'visible'">
   <div class="mdl-grid mdl-grid--no-spacing video-list">
     <div
       *ngFor="let video of videos$ | async"
       class="mdl-cell mdl-grid--no-spacing mdl-cell--4-col-desktop mdl-cell--4-col-tablet mdl-cell--12-col-phone video">
-      <a [routerLink]="[video.key]" (click)="onClickVideo()" class="video-link">
+      <a [routerLink]="['/', {outlets: {player: [video.key]}}]" (click)="onClickVideo()" class="video-link">
         <div
           data-id="{{video.key}}"
           [style.background]="background(video)"
@@ -22,4 +22,3 @@
     </button>
   </div>
 </div>
-<router-outlet></router-outlet>

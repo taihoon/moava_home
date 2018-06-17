@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {  } from '@angular/router';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -13,7 +13,7 @@ import { VideoService } from '../../services/video/video.service';
   templateUrl: './video-list.component.html',
   styleUrls: ['./video-list.component.css']
 })
-export class VideoListComponent implements OnInit {
+export class VideoListComponent {
   loading: boolean;
   videos$: Observable<IVideo[]>;
   playing: boolean;
@@ -23,16 +23,21 @@ export class VideoListComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private route: ActivatedRoute,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     private videoService: VideoService) {
-      console.log("videolist constructor");
       this.loading = false;
       this.playing = false;
-      this.limit = 4;
+      this.limit = 60;
       this.more$ = new BehaviorSubject(true);
 
-      this.route.paramMap.subscribe(params => {
-        console.log(params.get('id'));
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationStart) {
+          const urlTree = this.router.parseUrl(event.url);
+          if (!urlTree.root.children.player) {
+            this.playing = false;
+          }
+        }
       });
 
       this.videos$ = this.more$.pipe(
@@ -44,47 +49,18 @@ export class VideoListComponent implements OnInit {
       );
     }
 
-  ngOnInit() {
-    console.log("video list oninit");
-    // let endAt;
-    // this.videos$ = this.more$.pipe(
-    //   tap(_ => this.loading = true),
-    //   tap(_ => endAt = this.videoService.getEndAt()),
-    //   switchMap(isFirst => this.videoService.getVideos(endAt, this.limit, isFirst)),
-    //   scan((acc, videos) => acc.concat(videos) , []),
-    //   tap(_ => this.loading = false)
-    // );
-  }
-
   private background(video) {
     return this.sanitizer.
       bypassSecurityTrustStyle(`url(https://img.youtube.com/vi/${video.youtube_id}/0.jpg) center / cover`);
   }
 
-  private onMore() {
+  onMore() {
 		if (!this.loading) {
       this.more$.next(false);
     }
   }
 
-  protected onClickVideo() {
+  onClickVideo(video) {
     this.playing = true;
-    // const scrollTop = this.getScrollTop();
-    // this.videoService.cache("scrollTop", scrollTop);
-    // this.videoService.cache("key", key);
   }
-
-  // private getScrollTop() {
-  //   let el = this.el.nativeElement;
-  //   const matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
-
-  //   while (el) {
-  //     if (matchesSelector.call(el, 'main')) {
-  //       break;
-  //     } else {
-  //       el = el.parentElement;
-  //     }
-  //   }
-  //   return el.scrollTop;
-  // }
 }

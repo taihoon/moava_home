@@ -19,7 +19,7 @@
   <div class="mdl-layout__drawer moava-drawer">
     <span class="mdl-layout-title">MENU</span>
     <nav class="mdl-navigation">
-      <template *ngIf="!loginUser || !loginUser.uid">
+      <!-- <template *ngIf="!loginUser || !loginUser.uid">
         <span class="mdl-navigation__link">로그인</span>
         <a href="#" (click)="onClickLogin($event, 'Facebook')" class="mdl-navigation__link">페이스북으로 로그인</a>
         <a href="#" (click)="onClickLogin($event, 'Github')" class="mdl-navigation__link">github으로 로그인</a>
@@ -27,12 +27,15 @@
       <template *ngIf="loginUser && loginUser.uid">
         <a href="#" class="mdl-navigation__link">북마크</a>
         <a href="#" (click)="onClickLogout($event)" class="mdl-navigation__link">로그아웃</a>
-      </template>
+      </template> -->
     </nav>
   </div>
 	<main class="mdl-layout__content">
 		<div class="page-content">
 			<router-outlet></router-outlet>
-		</div>
-	</main>
+    </div>
+  </main>
+  <div class="player-content">
+    <router-outlet name="player"></router-outlet>
+  </div>
 </div>
