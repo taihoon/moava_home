@@ -1,19 +1,15 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { firebase } from '../environments/firebase.config';
 import { AppRoutingModule } from './app-routing.module';
-import { RouterHistoryService } from './services/router-history/router-history.service';
 
 import { VideosModule } from './videos.module';
 import { AppComponent } from './app.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(firebase),
@@ -21,7 +17,10 @@ import { AppComponent } from './app.component';
     AppRoutingModule,
     VideosModule
   ],
-  providers: [RouterHistoryService],
+  declarations: [
+    AppComponent
+  ],
+  providers: [Title],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
